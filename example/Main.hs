@@ -47,7 +47,7 @@ main = do
         >>= p "rx freq: "
 
     putStrLn "making rx streamer..."
-    rxstr <- usrpGetRxStream bmini (StreamArgs @(Complex Int16) [0] S16 "")
+    rxstr <- usrpGetRxStream bmini (StreamArgs @(Complex Int16) [0] SC16 "")
     putStrLn "made rx streamer"
     rxStreamerLastError rxstr
         >>= p "rx streamer last error: "

@@ -217,7 +217,16 @@ instance SampleType Int8 where
 data SomeSampleType = forall s. SampleType s => SomeSampleType (Proxy s)
 
 -- | Data format for samples over the wire between host and device.
-data WireFormat = SC16 | SC8 | SC12 | S16 | S8
+data WireFormat = -- | 16-bit Signed Complex
+                  SC16
+                  -- | 8-bit Signed Complex
+                | SC8
+                  -- | 12-bit Signed Complex
+                | SC12
+                  -- | 16-bit Signed
+                | S16
+                  -- | 8-bit Signed
+                | S8
                 deriving stock ( Eq
                                , Ord
                                , Enum
@@ -1414,7 +1423,7 @@ rxStreamerNumChannels (RxStreamer fp) =
 foreign import capi safe "uhd/usrp/usrp.h uhd_rx_streamer_max_num_samps"
     uhd_rx_streamer_max_num_samps :: Ptr (RxStreamer s) -> Ptr CSize -> IO UHDErrorEnum
 
--- | The maximum samples per buffer per packet for this streamer.
+-- | The maximum samples per buffer per channel for this streamer.
 rxStreamerMaxNumSamps :: (RxStreamer s) -> IO Word64
 rxStreamerMaxNumSamps (RxStreamer fp) =
     withForeignPtr fp $ \p ->
@@ -2087,7 +2096,10 @@ foreign import capi safe "uhd/usrp/mboard_eeprom.h uhd_mboard_eeprom_get_value"
                                 -> CSize
                                 -> IO UHDErrorEnum
 
-motherboardEEPROMGetValue :: MotherboardEEPROM -> String -> IO String
+-- | Get this EEPROM dictionary key's value.
+motherboardEEPROMGetValue :: MotherboardEEPROM
+                          -> String -- ^ Key.
+                          -> IO String
 motherboardEEPROMGetValue (MotherboardEEPROM fp) key =
     withForeignPtr fp $ \p ->
     withCString key $ \kp ->
@@ -2099,7 +2111,11 @@ foreign import capi safe "uhd/usrp/mboard_eeprom.h uhd_mboard_eeprom_set_value"
                                 -> Ptr CChar
                                 -> IO UHDErrorEnum
 
-motherboardEEPROMSetValue :: MotherboardEEPROM -> String -> String -> IO ()
+-- | Set this EEPROM dictionary key's value.
+motherboardEEPROMSetValue :: MotherboardEEPROM
+                          -> String -- ^ Key.
+                          -> String -- ^ Value.
+                          -> IO ()
 motherboardEEPROMSetValue (MotherboardEEPROM fp) key val =
     withForeignPtr fp $ \p ->
     withCString key $ \kp ->
@@ -2117,6 +2133,7 @@ motherboardEEPROMLastError (MotherboardEEPROM fp) =
     withForeignPtr fp $ \p ->
     getUHDString 2048 $ uhd_mboard_eeprom_last_error p
 
+-- | USRP daughterboard EEPROM key/value dictionary.
 data {-# CTYPE "uhd/usrp/dboard_eeprom.h" "struct uhd_dboard_eeprom_t" #-}
     DaughterboardEEPROM = DaughterboardEEPROM (ForeignPtr DaughterboardEEPROM)
 
@@ -2359,6 +2376,7 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_mboard_eeprom"
                                -> CSize
                                -> IO UHDErrorEnum
 
+-- | Set this motherboard's EEPROM dictionary
 usrpSetMotherboardEEPROM :: USRP
                          -> MotherboardIndex
                          -> MotherboardEEPROM
@@ -2376,10 +2394,11 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_get_dboard_eeprom"
                                -> CSize
                                -> IO UHDErrorEnum
 
+-- | Get this daughterboard's EEPROM dictionary.
 usrpGetDaughterboardEEPROM :: USRP
                            -> MotherboardIndex
-                           -> String
-                           -> String
+                           -> String -- ^ Unit name.
+                           -> String -- ^ Slot name.
                            -> DaughterboardEEPROM
                            -> IO ()
 usrpGetDaughterboardEEPROM (USRP fp) mi unit slot (DaughterboardEEPROM dfp) =
@@ -2397,10 +2416,11 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_dboard_eeprom"
                                -> CSize
                                -> IO UHDErrorEnum
 
+-- | Set this daughterboard's EEPROM dictionary.
 usrpSetDaughterboardEEPROM :: USRP
                            -> MotherboardIndex
-                           -> String
-                           -> String
+                           -> String -- ^ Unit name.
+                           -> String -- ^ Slot name.
                            -> DaughterboardEEPROM
                            -> IO ()
 usrpSetDaughterboardEEPROM (USRP fp) mi unit slot (DaughterboardEEPROM dfp) =
@@ -2715,7 +2735,7 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_rx_gain"
 usrpSetRxGain :: USRP
               -> ChanIndex
               -> String -- ^ Name.
-              -> Double
+              -> Double -- ^ Gain in dB.
               -> IO ()
 usrpSetRxGain (USRP fp) ci name g =
     withForeignPtr fp $ \p ->
@@ -2815,7 +2835,10 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_rx_antenna"
                             -> IO UHDErrorEnum
 
 -- | Set this Rx channel's antenna.
-usrpSetRxAntenna :: USRP -> ChanIndex -> String -> IO ()
+usrpSetRxAntenna :: USRP
+                 -> ChanIndex
+                 -> String -- ^ Antenna name.
+                 -> IO ()
 usrpSetRxAntenna (USRP fp) ci name =
     withForeignPtr fp $ \p ->
     withCString name $ \np ->
@@ -2870,7 +2893,10 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_rx_bandwidth"
                               -> IO UHDErrorEnum
 
 -- | Set this Rx channel's bandwidth in Hz.
-usrpSetRxBandwidth :: USRP -> ChanIndex -> Double -> IO ()
+usrpSetRxBandwidth :: USRP
+                   -> ChanIndex
+                   -> Double -- ^ Hz.
+                   -> IO ()
 usrpSetRxBandwidth (USRP fp) ci bw =
     withForeignPtr fp $ \p ->
     throwOnUHDError $ uhd_usrp_set_rx_bandwidth p bw (fromIntegral ci)
@@ -3206,7 +3232,11 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_tx_gain"
                          -> Ptr CChar
                          -> IO UHDErrorEnum
 
-usrpSetTxGain :: USRP -> ChanIndex -> String -> Double -> IO ()
+usrpSetTxGain :: USRP
+              -> ChanIndex
+              -> String -- ^ Name.
+              -> Double -- ^ Gain in dB.
+              -> IO ()
 usrpSetTxGain (USRP fp) ci name g =
     withForeignPtr fp $ \p ->
     withCString name $ \np ->
@@ -3268,6 +3298,8 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_normalized_tx_gain"
                                     -> CSize
                                     -> IO UHDErrorEnum
 
+-- | Set this Tx channel's normalized gain (in the range [0 .. 1]) for the
+--   entire RF chain.
 usrpSetTxGainNormalized :: USRP -> ChanIndex -> Double -> IO ()
 usrpSetTxGainNormalized (USRP fp) ci ng =
     withForeignPtr fp $ \p ->
@@ -3294,7 +3326,10 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_tx_antenna"
                             -> CSize
                             -> IO UHDErrorEnum
 
-usrpSetTxAntenna :: USRP -> ChanIndex -> String -> IO ()
+usrpSetTxAntenna :: USRP
+                 -> ChanIndex
+                 -> String -- ^ Antenna name.
+                 -> IO ()
 usrpSetTxAntenna (USRP fp) ci name =
     withForeignPtr fp $ \p ->
     withCString name $ \np ->
@@ -3346,7 +3381,10 @@ foreign import capi safe "uhd/usrp/usrp.h uhd_usrp_set_tx_bandwidth"
                               -> CSize
                               -> IO UHDErrorEnum
 
-usrpSetTxBandwidth :: USRP -> ChanIndex -> Double -> IO ()
+usrpSetTxBandwidth :: USRP
+                   -> ChanIndex
+                   -> Double -- ^ Hz.
+                   -> IO ()
 usrpSetTxBandwidth (USRP fp) ci bw =
     withForeignPtr fp $ \p ->
     throwOnUHDError $ uhd_usrp_set_tx_bandwidth p bw (fromIntegral ci)

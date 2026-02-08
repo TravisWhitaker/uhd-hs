@@ -370,7 +370,7 @@ txStreamerSend ts tos txmc r = do
 -- | Receive an asynchronous message from the provided streamer. If the timeout
 --   elapses and there is no message available, 'Nothing' is returned.
 txStreamerRecvAsyncMsg :: I.TxStreamer s
-                       -> Double
+                       -> Double -- ^ Timeout in seconds.
                        -> IO (Maybe AsyncMetadata)
 txStreamerRecvAsyncMsg ts tos = do
     am <- I.makeAsyncMetadata
@@ -446,6 +446,7 @@ usrpGetMotherboardSensorNames :: I.USRP -> I.MotherboardIndex -> IO [String]
 usrpGetMotherboardSensorNames u mi =
     I.fromStringVectorF $ I.usrpGetMotherboardSensorNamesSV u mi
 
+-- | Get the EEPROM dictionary for this motherboard.
 usrpGetMotherboardEEPROM :: I.USRP
                          -> I.MotherboardIndex
                          -> IO I.MotherboardEEPROM
@@ -454,6 +455,7 @@ usrpGetMotherboardEEPROM usrp mbi = do
     I.usrpGetMotherboardEEPROM usrp mbi mbe
     pure mbe
 
+-- | Get the EEPROM dictionary for this indicated daughterboard.
 usrpGetDaughterboardEEPROM :: I.USRP
                            -> I.MotherboardIndex
                            -> String -- ^ Unit name.
@@ -464,6 +466,7 @@ usrpGetDaughterboardEEPROM usrp mbi unit slot = do
     I.usrpGetDaughterboardEEPROM usrp mbi unit slot dbe
     pure dbe
 
+-- | Get the subdevices available on this motherboard.
 usrpGetRxSubdevSpec :: I.USRP
                     -> I.MotherboardIndex
                     -> IO [I.SubdevSpecPair]
