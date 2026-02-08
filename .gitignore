@@ -1,0 +1,10 @@
+.stack-work
+*.swp
+dist
+dist-newstyle
+**/.ghc.environment*
+cabal.project.local*
+**/.DS_Store
+**/*.png
+**/*.html
+**/*.prof
