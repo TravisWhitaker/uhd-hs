@@ -166,7 +166,7 @@ getUHDString_ bl f = getUHDString bl
 foreign import capi safe "uhd/error.h uhd_get_last_error"
     uhd_get_last_error :: Ptr CChar -> CSize -> IO UHDErrorEnum
 
--- | Get a human readable description of the last error that occured in UHD
+-- | Get a human readable description of the last error that occurred in UHD
 --   itself. This is thread safe in the sense that UHD's updates to this string
 --   are atomic (i.e. you won't get garbled text). However, if you're calling
 --   UHD functions from multiple Haskell threads, it won't be straightforward to

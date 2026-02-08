@@ -65,7 +65,7 @@ cfg = Cfg
         )
     <*> strOption (  short 'o'
                   <> metavar "OUTPUT_FILE"
-                  <> help "Ouptut file path."
+                  <> help "Output file path."
                   <> value "out.dat"
                   )
 

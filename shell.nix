@@ -11,6 +11,7 @@ in mkShell
                  thisuhd.dev
                  haskellPackages.profiteur
                  haskellPackages.eventlog2html
+                 typos
                ];
     shellHook = ''
         export DYLD_LIBRARY_PATH=${fftw}/lib:${thisuhd.out}/lib

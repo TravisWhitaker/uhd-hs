@@ -38,7 +38,7 @@ module Network.UHD (
   , I.usrpSetUserReg
     -- ** Time
     -- | Note that as far as UHD is concerned, "time" refers to an absolute time
-    --   reference while "clock" refers to a frequeny reference.
+    --   reference while "clock" refers to a frequency reference.
   , I.TimeSpec
   , I.toTimeSpec
   , I.fromTimeSpec
@@ -56,7 +56,7 @@ module Network.UHD (
   , I.usrpClearCommandTime
   -- ** Clocks
   -- | Note that as far as UHD is concerned, "time" refers to an absolute time
-  --   reference while "clock" refers to a frequeny reference.
+  --   reference while "clock" refers to a frequency reference.
   , usrpGetClockSources
   , I.usrpGetClockSource
   , I.usrpSetClockSource
