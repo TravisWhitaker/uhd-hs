@@ -55,3 +55,25 @@ executable example
                        -Wno-unused-matches
                        -Werror
 
+executable rx_samples_hs
+  main-is: Main.hs
+  hs-source-dirs: rx_samples_hs
+  build-depends: base
+               , optparse-applicative
+               , time
+               , vector
+               , uhd
+  default-language: Haskell2010
+  ghc-options:         -O2
+                       -threaded
+                       -rtsopts
+                       -Wall
+                       -Widentities
+                       -Wredundant-constraints
+                       -Wcompat
+                       -Wno-type-defaults
+                       -Wno-unused-local-binds
+                       -Wno-unused-do-bind
+                       -Wno-unused-matches
+                       -Werror
+
