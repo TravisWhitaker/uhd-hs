@@ -1,7 +1,7 @@
 cabal-version:       2.2
 
 name:                uhd
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Interface with Ettus USRP SDRs
 description:         Interface with Ettus USRP SDRs
 homepage:            https://github.com/TravisWhitaker/uhd-hs
