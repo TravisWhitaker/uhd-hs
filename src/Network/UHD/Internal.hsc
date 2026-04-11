@@ -24,6 +24,7 @@ if you want direct access to the underlying UHD handles for some reason.
            , RecordWildCards
            , RoleAnnotations
            , ScopedTypeVariables
+           , TypeApplications
            , TypeFamilies
            , UnliftedFFITypes
            #-}
@@ -271,7 +272,7 @@ withStreamArgs StreamArgs{..} f = allocaBytes #{size uhd_stream_args_t} $ \p ->
         #{poke uhd_stream_args_t,otw_format} p (staticStringPtr (toOTWString saWireFormat))
         #{poke uhd_stream_args_t,args} p sap
         #{poke uhd_stream_args_t,channel_list} p cip
-        #{poke uhd_stream_args_t,n_channels} p (fromIntegral cn)
+        #{poke uhd_stream_args_t,n_channels} p (fromIntegral @Int @CInt cn)
         f p
 
 -- | Stream control command.
