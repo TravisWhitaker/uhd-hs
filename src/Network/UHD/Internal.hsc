@@ -1323,7 +1323,7 @@ data {-# CTYPE "uhd/types/usrp_info.h" "uhd_usrp_rx_info_t" #-}
       , riMotherboardSerial :: String
       , riRxId :: String
       , riRxSubDevName :: String
-      , riRxSubDebSpec :: String
+      , riRxSubDevSpec :: String
       , riRxSerial :: String
       , riRxAntenna :: String
       } deriving stock ( Eq
@@ -1348,7 +1348,7 @@ peekRxInfo p = do
         (#{peek uhd_usrp_rx_info_t,rx_id} p) >>= peekCString
     riRxSubDevName <-
         (#{peek uhd_usrp_rx_info_t,rx_subdev_name} p) >>= peekCString
-    riRxSubDebSpec <-
+    riRxSubDevSpec <-
         (#{peek uhd_usrp_rx_info_t,rx_subdev_spec} p) >>= peekCString
     riRxSerial <-
         (#{peek uhd_usrp_rx_info_t,rx_serial} p) >>= peekCString
@@ -1364,7 +1364,7 @@ data {-# CTYPE "uhd/types/usrp_info.h" "uhd_usrp_tx_info_t" #-}
       , tiMotherboardSerial :: String
       , tiTxId :: String
       , tiTxSubDevName :: String
-      , tiTxSubDebSpec :: String
+      , tiTxSubDevSpec :: String
       , tiTxSerial :: String
       , tiTxAntenna :: String
       } deriving stock ( Eq
@@ -1389,7 +1389,7 @@ peekTxInfo p = do
         (#{peek uhd_usrp_tx_info_t,tx_id} p) >>= peekCString
     tiTxSubDevName <-
         (#{peek uhd_usrp_tx_info_t,tx_subdev_name} p) >>= peekCString
-    tiTxSubDebSpec <-
+    tiTxSubDevSpec <-
         (#{peek uhd_usrp_tx_info_t,tx_subdev_spec} p) >>= peekCString
     tiTxSerial <-
         (#{peek uhd_usrp_tx_info_t,tx_serial} p) >>= peekCString
@@ -1457,8 +1457,9 @@ rxStreamerRecv rs@(RxStreamer rsfp) (RxMetadata rmfp) maxN tos oneP =
         allocaArray cn $ \bsp ->
             allocaArray cn $ \osp -> do
                 let imaxN = fromIntegral maxN
-                topBuffFP <- mallocForeignPtrBytes (sizeOf (undefined :: s) * cn * imaxN)
-                let buffFPs = V.generate cn (plusForeignPtr topBuffFP . (* imaxN))
+                    sampleSize = sizeOf (undefined :: s)
+                topBuffFP <- mallocForeignPtrBytes (sampleSize * cn * imaxN)
+                let buffFPs = V.generate cn (plusForeignPtr topBuffFP . (* (imaxN * sampleSize)))
                 V.imapM (\ci p -> pokeElemOff bsp ci (unsafeForeignPtrToPtr p))
                         buffFPs
                 poke rmpp rmp
