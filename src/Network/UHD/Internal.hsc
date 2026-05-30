@@ -914,7 +914,6 @@ makeStringVector :: IO StringVector
 makeStringVector = alloca $ \p -> do
     throwOnUHDError $ uhd_string_vector_make p
     mp <- peek p
-    print mp
     StringVector <$> newForeignPtr mp (mkFreeByRef uhd_string_vector_free mp)
 
 foreign import capi safe "uhd/types/string_vector.h uhd_string_vector_push_back"
